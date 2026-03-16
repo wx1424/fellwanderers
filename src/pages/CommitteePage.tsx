@@ -78,8 +78,8 @@ export default function CommitteePage() {
                   <img className="absolute -left-6 w-24 h-24 border border-logoGreen-dark rounded-full shadow-lg"
                        src={person.image} alt={person.name}/>
                     <div className="flex flex-col py-5 pl-24">
-                      <strong className="text-slate-900 text-lg font-medium">{person.name}</strong>
-                      <span className="text-slate-900 text-sm font-medium">{person.role}</span>
+                      <strong className="text-slate-900 text-sm font-medium">{person.name + person.role}</strong>
+                      <!--<span className="text-slate-900 text-sm font-medium">{person.role}</span>-->
                       <span className="text-slate-500 text-sm font-mediuim">{person.course}</span>
                     </div>
                 </div>
