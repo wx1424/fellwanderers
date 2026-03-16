@@ -3,9 +3,9 @@ import PageFooter from "../components/PageFooter";
 
 const people = [
   {
-    name: 'Michael Sellgren',
+    name: 'Daniel Logue',
     role: 'President',
-    image: 'committee/michael.jpeg'
+    image: 'committee/dan.jpg'
   },
   {
     name: 'Zong Junn Lee',
