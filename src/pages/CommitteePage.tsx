@@ -5,55 +5,55 @@ const people = [
   {
     name: 'Daniel Logue',
     role: 'President',
-    image: 'committee/dan.jpg'
+    image: 'committee/dan.jpg',
     course: '3rd year Chemistry'
   },
   {
     name: 'Harry Su',
     role: 'Co-President',
-    image: 'committee/harry.jpg'
+    image: 'committee/harry.jpg',
     course: '3rd year Computing'
   },
   {
     name: 'Zaynub Jamil',
     role: 'Treasurer',
-    image: 'committee/zaynub.jpg'
+    image: 'committee/zaynub.jpg',
     course: '3rd year Medicine'
   },
   {
     name: 'Ivy Wang',
     role: 'Secretary',
-    image: 'committee/ivy.jpg'
+    image: 'committee/ivy.jpg',
     course: '2nd year Biochemistry'
   },
   {
     name: 'Rashika Kiritharan',
     role: 'Deputy President Communication',
-    image: 'committee/rashika.png'
+    image: 'committee/rashika.png',
     course: '3rd year Medicine'
   },
   {
     name: 'Dia Ajmera',
     role: 'Deputy President Competitions',
-    image: 'committee/dia.jpg'
+    image: 'committee/dia.jpg',
     course: '3rd year Medicine'
   },
   {
     name: 'Will Xiao',
     role: 'Deputy President Socials',
-    image: 'committee/will.jpg'
+    image: 'committee/will.jpg',
     course: '2nd year Maths'
   },
   {
     name: 'Mateusz Sejda',
     role: 'Deputy President Tours',
-    image: 'committee/mateusz.jpg'
+    image: 'committee/mateusz.jpg',
     course: '2nd year Physics'
   },
   {
     name: 'Mihnea Lazar',
     role: 'Deputy President Weekend Trips',
-    image: 'committee/mihnea.jpg'
+    image: 'committee/mihnea.jpg',
     course: '3rd year Chemistry'
   }
 ]
