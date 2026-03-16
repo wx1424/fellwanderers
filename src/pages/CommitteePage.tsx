@@ -8,44 +8,44 @@ const people = [
     image: 'committee/dan.jpg'
   },
   {
-    name: 'Zong Junn Lee',
+    name: 'Harry Su',
     role: 'Co-President',
-    image: 'committee/zong.jpeg'
+    image: 'committee/harry.jpg'
   },
   {
-    name: 'Ethan Clark',
-    role: 'Treasurer, Deputy President Logistics',
-    image: 'committee/ethan.jpeg'
+    name: 'Zaynub Jamil',
+    role: 'Treasurer',
+    image: 'committee/zaynub.jpg'
   },
   {
-    name: 'Chris O\'Sullivan',
-    role: 'Secretary, Deputy President Activities',
-    image: 'committee/chris.jpeg'
+    name: 'Ivy Wang',
+    role: 'Secretary',
+    image: 'committee/ivy.jpg'
   },
   {
-    name: 'Euan Turner',
+    name: 'Rashika Kiritharan',
     role: 'Deputy President Communication',
-    image: 'committee/euan.jpeg'
+    image: 'committee/rashika.png'
   },
   {
-    name: 'Daniel Hesk',
+    name: 'Dia Ajmera',
     role: 'Deputy President Competitions',
-    image: 'committee/daniel.jpeg'
+    image: 'committee/dia.jpg'
   },
   {
-    name: 'Sydney Xie',
+    name: 'Will Xiao',
     role: 'Deputy President Socials',
-    image: 'committee/sydney.jpeg'
+    image: 'committee/will.jpg'
   },
   {
-    name: 'Felix Aubugeau-Williams',
+    name: 'Mateusz Sejda',
     role: 'Deputy President Tours',
-    image: 'committee/felix.jpeg'
+    image: 'committee/mateusz.jpg'
   },
   {
-    name: 'Sami Kibal',
+    name: 'Mihnea Lazar',
     role: 'Deputy President Weekend Trips',
-    image: 'committee/sami.jpeg'
+    image: 'committee/mihnea.jpg'
   }
 ]
 
