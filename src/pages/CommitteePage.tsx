@@ -51,10 +51,28 @@ const people = [
     course: '2nd year Physics'
   },
   {
-    name: 'Mihnea Lazar',
+    name: 'Sean Chong',
     role: 'Deputy President Weekend Trips',
+    image: 'committee/sean.jpg',
+    course: '3rd year Medicine'
+  },
+  {
+    name: 'Rajveer Daga',
+    role: 'Deputy President Activities',
+    image: 'committee/rajveer.jpg',
+    course: '2nd year Physics'
+  }
+  {
+    name: 'Mihnea Lazar',
+    role: 'Deputy President Equipment',
     image: 'committee/mihnea.jpg',
     course: '3rd year Chemistry'
+  }
+  {
+    name: 'Elişka Hovorkova',
+    role: 'Deputy President Logistics',
+    image: 'eliska.jpg',
+    course: '2nd year Physics'
   }
 ]
 
