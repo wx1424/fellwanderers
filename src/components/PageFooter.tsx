@@ -11,8 +11,7 @@ import StyledLink from "../components/StyledLink.tsx";
 
 const instaLink = "https://www.instagram.com/icfellwanderers";
 const shopLink = "https://www.imperialcollegeunion.org/student-group-shop?groupId=49";
-const mailLink = "https://forms.office.com/Pages/ResponsePage.aspx?id=B3WJK4zudUWDC0-CZ8PTBwDrjO1uK9tNvqNaN-rdDE5UNktTTFBBT1kwWFRFTVRTNUtMNzk3UkpDWCQlQCN0PWcu
-";
+const mailLink = "https://forms.office.com/Pages/ResponsePage.aspx?id=B3WJK4zudUWDC0-CZ8PTBwDrjO1uK9tNvqNaN-rdDE5UNktTTFBBT1kwWFRFTVRTNUtMNzk3UkpDWCQlQCN0PWcu";
 
 export default function PageFooter() {
   const [showLoginPopup, setShowLoginPopup] = useState<boolean>(false);
