@@ -69,7 +69,7 @@ const people = [
     course: '3rd year Chemistry'
   },
   {
-    name: 'Elişka Hovorkova',
+    name: 'Eliska Hovorkova',
     role: 'Deputy President Logistics',
     image: 'eliska.jpg',
     course: '2nd year Physics'
