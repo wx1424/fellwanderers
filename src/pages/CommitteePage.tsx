@@ -71,7 +71,7 @@ const people = [
   {
     name: 'Elişka Hovorkova',
     role: 'Deputy President Logistics',
-    image: 'eliska.png',
+    image: 'committee/eliska.png',
     course: '2nd year Physics'
   }
 ]
