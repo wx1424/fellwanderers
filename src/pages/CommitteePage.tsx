@@ -29,7 +29,7 @@ const people = [
   {
     name: 'Rashika Kiritharan',
     role: 'Deputy President Communication',
-    image: 'committee/rashika.png',
+    image: 'committee/rashika.jpg',
     course: '3rd year Medicine'
   },
   {
@@ -71,7 +71,7 @@ const people = [
   {
     name: 'Elişka Hovorkova',
     role: 'Deputy President Logistics',
-    image: 'committee/eliska.png',
+    image: 'committee/eliska.jpg',
     course: '2nd year Physics'
   }
 ]
