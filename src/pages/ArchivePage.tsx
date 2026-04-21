@@ -43,8 +43,8 @@ const handleAddArchiveSubmit = (archive: Archive, images: FileList, archiveDocs:
 }
 
 const isValidAddArchive = (archive: Archive, selectedFiles: FileList | null): [boolean, string | null] => {
-  if (!selectedFiles) {
-    return [false, "No images selected"];
+  //if (!selectedFiles) {
+    //return [false, "No images selected"];
   }
   if (archive.order === 0) {
     return [false, "Archive number cannot be 0"];
