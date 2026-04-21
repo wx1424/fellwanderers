@@ -233,8 +233,8 @@ export default function ArchivePage() {
             Trip Archive
           </h2>
           <p className="mt-3 text-lg leading-8 text-gray-600">
-            Looking for some hiking inspiration? Here's a selection of some of
-            the hikes we've been on in the past
+            Looking for some hiking inspiration? Here's a selection of some trip reports for
+            the hikes we've been on in the past!
           </p>
         </div>
         {
