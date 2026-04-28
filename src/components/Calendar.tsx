@@ -103,7 +103,7 @@ export default function Calendar({ activities, setActivities }: CalendarProps) {
 
   // TODO: Work out if limits necessary, and how dynamic they may need to be
   const earliest = new Date(2023, 4, 1);
-  const latest = new Date(2023, 11, 1);
+  const latest = new Date(2027, 11, 1);
   const { isLoggedIn } = useAuth();
   const nextMonth = () => {
     setMonthStart(new Date(monthStart.setMonth(monthStart.getMonth() + 1)));
