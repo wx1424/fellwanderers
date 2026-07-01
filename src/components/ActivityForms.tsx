@@ -29,7 +29,6 @@ const convertType = (text: string) => {
   if (text === "Social") return ActivityType.Social;
   if (text === "Weekend") return ActivityType.Weekend;
   if (text === "Tour") return ActivityType.Tour;
-  return '';
 };
 
 interface ActivityFormProps {
