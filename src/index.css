@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Helvetica LT';
+  src: url('/fonts/Helvetica_LT_Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica Black Oblique';
+  src: url('/fonts/helvetica_black_oblique-webfont.woff2') format('woff2');
+}
+
+body {
+  font-family: 'Helvetica LT', Helvetica, Arial, sans-serif;
+}

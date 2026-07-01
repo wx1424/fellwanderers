@@ -11,6 +11,10 @@ export default {
                 dark: '#28914f',
                 light: '#a3cfb6'
             }
+        },
+        fontFamily: {
+            sans: ['Helvetica LT', 'Helvetica', 'Arial', 'sans-serif'],
+            'helvetica-black': ['Helvetica Black Oblique', 'Helvetica', 'Arial', 'sans-serif'],
         }
     },
   },
