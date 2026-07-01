@@ -56,16 +56,14 @@ export default function ActivityPopup({ doc, onSubmit, onClose, mode = 'add' }: 
     const [valid, err] = isValid();
     setError(err);
     if (valid) {
-      onSubmit({
-        ...doc,
-        data: {
-          title,
-          date: parseLocalDate(startDate),
-          endDate: endDate ? parseLocalDate(endDate) : undefined,
-          type: convertType(type),
-          misc
-        }
-      });
+      const data: Activity = {
+        title,
+        date: parseLocalDate(startDate),
+        type: convertType(type),
+        misc
+      };
+      if (endDate) data.endDate = parseLocalDate(endDate);
+      onSubmit({ ...doc, data });
       onClose();
     }
   };
