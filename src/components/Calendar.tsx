@@ -1,39 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
   faPlus,
-  faTrashCan
+  faEllipsisVertical
 } from "@fortawesome/free-solid-svg-icons";
 import Activity, { ActivityType } from "../types/Activity.ts";
 import { Doc, handleSaveChangesClick } from "../../firebaseAPI.ts";
 import { useAuth } from "../contexts/AuthContext.tsx";
-import AddActivityPopup from "./ActivityForms.tsx";
+import ActivityPopup from "./ActivityForms.tsx";
 
 interface CalendarProps {
   activities: Doc<Activity>[];
   setActivities: React.Dispatch<React.SetStateAction<Doc<Activity>[]>>;
 }
 
+interface DayCell {
+  date: Date;
+  activities: Doc<Activity>[];
+}
+
 function colourActivity(type: ActivityType): string {
   switch (type) {
-    case ActivityType.Blank:
-      return "bg-white";
-    case ActivityType.Hike:
-      return "bg-green-200";
-    case ActivityType.Social:
-      return "bg-orange-200";
-    case ActivityType.Weekend:
-      return "bg-blue-200";
+    case ActivityType.Hike:    return "bg-green-200";
+    case ActivityType.Social:  return "bg-orange-200";
+    case ActivityType.Weekend: return "bg-blue-200";
+    default:                   return "bg-gray-100";
   }
 }
 
 const firstMondayOfMonth = (date: Date) => {
   const tempDate = new Date(date);
-  // Set tempDate to first of current month
   tempDate.setDate(1);
-  // Move tempDate to previous Monday
   while (tempDate.getDay() !== 1) {
     tempDate.setDate(tempDate.getDate() - 1);
   }
@@ -42,47 +41,30 @@ const firstMondayOfMonth = (date: Date) => {
 
 const lastSundayOfMonth = (date: Date) => {
   const tempDate = new Date(date);
-  // Set tempDate to last day of current month
   tempDate.setDate(1);
   tempDate.setMonth(date.getMonth() + 1);
   tempDate.setDate(tempDate.getDate() - 1);
-  // Move tempDate to next Sunday
   while (tempDate.getDay() !== 0) {
     tempDate.setDate(tempDate.getDate() + 1);
   }
   return tempDate;
 };
 
-// PRE: planned activities are in chronological order
-const createMonthActivities = (startDate: Date, planned: Doc<Activity>[]) => {
+const createMonthCells = (startDate: Date, planned: Doc<Activity>[]): DayCell[] => {
   const currDate = firstMondayOfMonth(startDate);
   const endDate = lastSundayOfMonth(startDate);
-  const monthActivities = planned.filter(({data}) => {
-    const actDate = data.date;
-    return actDate >= currDate && actDate <= endDate;
-  });
-  const activities: Doc<Activity>[] = [];
-  const blankActivity = () => {return {
-    id: "",
-    data: {
-    title: "",
-    date: new Date(currDate),
-    type: ActivityType.Blank,
-    misc: "",
-    }
-  }};
+  const cells: DayCell[] = [];
   while (currDate.getTime() <= endDate.getTime()) {
-    if (
-      monthActivities.length > 0 &&
-      currDate.toString() === monthActivities[0].data.date.toString()
-    ) {
-      activities.push(monthActivities.shift() as Doc<Activity>);
-    } else {
-      activities.push(blankActivity());
-    }
+    const curr = currDate.getTime();
+    const dayActivities = planned.filter(({ data }) => {
+      const start = data.date.getTime();
+      const end = data.endDate ? data.endDate.getTime() : start;
+      return curr >= start && curr <= end;
+    });
+    cells.push({ date: new Date(currDate), activities: dayActivities });
     currDate.setDate(currDate.getDate() + 1);
   }
-  return activities;
+  return cells;
 };
 
 const monthFirst = () => {
@@ -92,19 +74,84 @@ const monthFirst = () => {
   return res;
 };
 
+const todayMidnight = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+interface ChipProps {
+  doc: Doc<Activity>;
+  menuKey: string;
+  openMenuKey: string | null;
+  setOpenMenuKey: (k: string | null) => void;
+  onDelete: (doc: Doc<Activity>) => void;
+  onEdit: (doc: Doc<Activity>) => void;
+  isLoggedIn: boolean;
+}
+
+function ActivityChip({ doc, menuKey, openMenuKey, setOpenMenuKey, onDelete, onEdit, isLoggedIn }: ChipProps) {
+  const colour = colourActivity(doc.data.type);
+  const menuOpen = openMenuKey === menuKey;
+
+  return (
+    <div className={`${colour} rounded px-1.5 py-0.5 flex justify-between items-start gap-1 relative`}>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-oblique font-semibold truncate">{doc.data.title}</p>
+        {doc.data.misc && <p className="text-xs text-gray-500 break-words">{doc.data.misc}</p>}
+      </div>
+      {isLoggedIn && (
+        <div className="relative flex-shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpenMenuKey(menuOpen ? null : menuKey); }}
+            className="text-gray-500 hover:text-gray-800 px-0.5 leading-none"
+          >
+            <FontAwesomeIcon icon={faEllipsisVertical} size="xs" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-5 z-20 bg-white border border-gray-200 rounded shadow-lg min-w-[80px] text-xs">
+              <button
+                className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+                onClick={(e) => { e.stopPropagation(); setOpenMenuKey(null); onEdit(doc); }}
+              >
+                Edit
+              </button>
+              <button
+                className="block w-full text-left px-3 py-2 hover:bg-red-50 text-red-600"
+                onClick={(e) => { e.stopPropagation(); setOpenMenuKey(null); onDelete(doc); }}
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Calendar({ activities, setActivities }: CalendarProps) {
   const [monthStart, setMonthStart] = useState<Date>(monthFirst());
-  const [monthActivities, setMonthActivities] = useState<Doc<Activity>[]>([]);
+  const [monthCells, setMonthCells] = useState<DayCell[]>([]);
   const [prevDisabled, setPrevDisabled] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<null | Doc<Activity>>(null);
-  const [addPopupVisible, setAddPopupVisible] = useState(false);
+  const [popupMode, setPopupMode] = useState<'add' | 'edit'>('add');
+  const [popupVisible, setPopupVisible] = useState(false);
   const [docsToDelete, setDocsToDelete] = useState<Doc<Activity>[]>([]);
+  const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
-  // TODO: Work out if limits necessary, and how dynamic they may need to be
   const earliest = new Date(2023, 4, 1);
   const latest = new Date(2027, 11, 1);
   const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = () => setOpenMenuKey(null);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   const nextMonth = () => {
     setMonthStart(new Date(monthStart.setMonth(monthStart.getMonth() + 1)));
     setNextDisabled(monthStart.getTime() >= latest.getTime());
@@ -115,91 +162,120 @@ export default function Calendar({ activities, setActivities }: CalendarProps) {
     setPrevDisabled(monthStart.getTime() <= earliest.getTime());
     setNextDisabled(false);
   };
+
   const titleDateFormat = new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long" });
-  const tileDateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" })
+
+  const openAddPopup = (date: Date = todayMidnight()) => {
+    setSelectedDoc({ id: "", data: { title: "", date, type: ActivityType.Blank, misc: "" } });
+    setPopupMode('add');
+    setPopupVisible(true);
+  };
+
+  const openEditPopup = (doc: Doc<Activity>) => {
+    setSelectedDoc(doc);
+    setPopupMode('edit');
+    setPopupVisible(true);
+  };
 
   const handleAddSubmit = (doc: Doc<Activity>) => {
     const newDocs = [...activities, doc];
     setActivities(newDocs.sort((a, b) => a.data.date.getTime() - b.data.date.getTime()));
-    console.log(activities);
-  }
+  };
 
-  const handleAddClose = () => {
-    setAddPopupVisible(false);
-  }
+  const handleEditSubmit = (updatedDoc: Doc<Activity>) => {
+    const orig = selectedDoc;
+    setActivities(prev =>
+      prev
+        .map((a) => (a === orig ? updatedDoc : a))
+        .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+    );
+  };
 
   const handleDeleteSubmit = (doc: Doc<Activity>) => {
-    const newDocs = activities.filter((actDoc) => actDoc.id !== doc.id);
-    setActivities([...newDocs]);
+    setActivities(activities.filter((a) => a !== doc));
     setDocsToDelete([...docsToDelete, doc]);
-  }
+  };
 
   useEffect(() => {
-    setMonthActivities(createMonthActivities(monthStart, activities));
+    setMonthCells(createMonthCells(monthStart, activities));
   }, [monthStart, activities]);
 
+  const dayHeaders = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const btnStyle = "shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md hover:bg-green-900/60";
+
   return (
-    <div className={"container mx-auto w-full lg:py-8"}>
-      <div className={"flex justify-center items-center lg:mb-4"}>
-        <button
-          className={"bg-white hover:scale-y-110 py-2 px-4 rounded-lg"}
-          onClick={prevMonth}
-          disabled={prevDisabled}
-        >
+    <div ref={calendarRef} className={"container mx-auto w-full lg:py-8"}>
+      <div className={"flex flex-wrap justify-center items-center gap-3 lg:mb-4"}>
+        <button className={"bg-white hover:scale-y-110 py-2 px-4 rounded-lg"} onClick={prevMonth} disabled={prevDisabled}>
           {!prevDisabled && <FontAwesomeIcon icon={faChevronLeft} />}
         </button>
-        <h1 className={"text-xl xl:text-2xl font-bold"}>
-          {titleDateFormat.format(monthStart)}
-        </h1>
-
-        <button
-          className={
-            "bg-white hover:scale-y-110 font-bold py-2 px-4 rounded-lg"
-          }
-          onClick={nextMonth}
-          disabled={nextDisabled}
-        >
+        <h1 className={"text-xl xl:text-2xl font-bold"}>{titleDateFormat.format(monthStart)}</h1>
+        <button className={"bg-white hover:scale-y-110 font-bold py-2 px-4 rounded-lg"} onClick={nextMonth} disabled={nextDisabled}>
           {!nextDisabled && <FontAwesomeIcon icon={faChevronRight} />}
         </button>
-        {
-          isLoggedIn && 
-          <button className={"shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60"} onClick={() => handleSaveChangesClick<Activity>("activities", activities, docsToDelete)}>
-            <p>Save Changes</p>
-          </button>
-
-        }
+        {isLoggedIn && (
+          <>
+            <button className={btnStyle} onClick={() => openAddPopup()}>
+              <FontAwesomeIcon icon={faPlus} /> Add Event
+            </button>
+            <button className={btnStyle} onClick={() => handleSaveChangesClick<Activity>("activities", activities, docsToDelete)}>
+              Save Changes
+            </button>
+          </>
+        )}
       </div>
-      <div className={"w-full h-full overflow-x-scroll overflow-y-scroll"}>
-        <div className={"inline-flex flex-col w-[800px] min-h-max lg:w-full lg:h-[725px] "}>
-          <div className={"grid grid-rows-5 grid-cols-7 gap-y-1 gap-x-0.5 lg:gap-4 p-2"}>
-            {monthActivities.map((doc, actIndex) => (
-              <div
-                key={actIndex}
-                className={`${colourActivity(doc.data.type)} shadow-md p-1 lg:p-4 h-fit border border-slate-400`}
-              >
-                <div className={"flex flex-row justify-between"}>
-                  <h3 className={"text-sm lg:text-base text-gray-700"}>{tileDateFormat.format(doc.data.date)}</h3>
-                  {
-                    isLoggedIn && doc.data.type === ActivityType.Blank &&
-                    <button onClick={() => {setSelectedDoc(doc); setAddPopupVisible(true)}}>
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                  }
-                  {
-                    addPopupVisible && 
-                    <AddActivityPopup doc={selectedDoc as Doc<Activity>} onSubmit={handleAddSubmit} onClose={handleAddClose} />
-                  }
-                  {
-                    isLoggedIn && doc.data.type !== ActivityType.Blank && 
-                    <button onClick={() => {handleDeleteSubmit(doc)}}>
-                      <FontAwesomeIcon icon={faTrashCan} />
-                    </button>
-                  }
-                </div>
-                <h2 className={"text-base lg:text-lg font-semibold"}>{doc.data.title}</h2>
-                <p className={"text-sm lg:text-base text-gray-500"}>{doc.data.misc}</p>
+
+      {popupVisible && selectedDoc && (
+        <ActivityPopup
+          doc={selectedDoc}
+          mode={popupMode}
+          onSubmit={popupMode === 'edit' ? handleEditSubmit : handleAddSubmit}
+          onClose={() => setPopupVisible(false)}
+        />
+      )}
+
+      <div className={"w-full overflow-x-auto"}>
+        <div className={"min-w-[600px]"}>
+          <div className={"grid grid-cols-7 mb-1"}>
+            {dayHeaders.map((day) => (
+              <div key={day} className={"text-center text-sm font-semibold text-gray-500 py-1"}>
+                {day}
               </div>
             ))}
+          </div>
+          <div className={"grid grid-cols-7 gap-1"}>
+            {monthCells.map((cell, i) => {
+              const isCurrentMonth = cell.date.getMonth() === monthStart.getMonth();
+              return (
+                <div
+                  key={i}
+                  className={`border border-slate-200 p-1 min-h-20 flex flex-col gap-0.5 ${isCurrentMonth ? "bg-white" : "bg-gray-50"}`}
+                >
+                  <div className={"flex justify-between items-center"}>
+                    <span className={`text-xs font-medium ${isCurrentMonth ? "text-gray-700" : "text-gray-300"}`}>
+                      {cell.date.getDate()}
+                    </span>
+                    {isLoggedIn && isCurrentMonth && (
+                      <button onClick={() => openAddPopup(cell.date)} className={"text-gray-300 hover:text-gray-600"}>
+                        <FontAwesomeIcon icon={faPlus} size="xs" />
+                      </button>
+                    )}
+                  </div>
+                  {cell.activities.map((act, j) => (
+                    <ActivityChip
+                      key={j}
+                      menuKey={`${i}-${j}`}
+                      openMenuKey={openMenuKey}
+                      setOpenMenuKey={setOpenMenuKey}
+                      doc={act}
+                      onDelete={handleDeleteSubmit}
+                      onEdit={openEditPopup}
+                      isLoggedIn={isLoggedIn}
+                    />
+                  ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,94 +1,122 @@
-import {useState} from 'react';
-import Activity, {ActivityType} from "../types/Activity";
-import {Doc} from "../../firebaseAPI";
+import { useState } from 'react';
+import Activity, { ActivityType } from "../types/Activity";
+import { Doc } from "../../firebaseAPI";
 
-interface AddActivityPopupProps {
+const toDateInputValue = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+const parseLocalDate = (dateStr: string): Date => {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+const typeToString = (type: ActivityType) => {
+  if (type === ActivityType.Hike) return 'Hike';
+  if (type === ActivityType.Social) return 'Social';
+  if (type === ActivityType.Weekend) return 'Weekend';
+  return '';
+};
+
+const convertType = (text: string) => {
+  if (text === "Hike") return ActivityType.Hike;
+  if (text === "Social") return ActivityType.Social;
+  return ActivityType.Weekend;
+};
+
+interface ActivityFormProps {
   doc: Doc<Activity>;
   onSubmit: (doc: Doc<Activity>) => void;
   onClose: () => void;
+  mode?: 'add' | 'edit';
 }
-export default function AddActivityPopup({ doc, onSubmit, onClose }: AddActivityPopupProps) {
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState('');
-  const [misc, setMisc] = useState('');
+
+export default function ActivityPopup({ doc, onSubmit, onClose, mode = 'add' }: ActivityFormProps) {
+  const [title, setTitle] = useState(mode === 'edit' ? doc.data.title : '');
+  const [type, setType] = useState(mode === 'edit' ? typeToString(doc.data.type) : '');
+  const [misc, setMisc] = useState(mode === 'edit' ? doc.data.misc : '');
+  const [startDate, setStartDate] = useState(toDateInputValue(doc.data.date));
+  const [endDate, setEndDate] = useState(doc.data.endDate ? toDateInputValue(doc.data.endDate) : '');
   const [error, setError] = useState<string | null>(null);
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setType(e.target.value);
-  }
-  const convertType = (text: string) => {
-    if (text === "Hike") {
-      return ActivityType.Hike;
-    } else if (text === "Social"){
-      return ActivityType.Social;
-    } else {
-      return ActivityType.Weekend;
-    }
-  }
-  const isValidActivity = (title: string, type: string): [boolean, string | null] => {
-    if (title.trim() === '') {
-      return [false, "Title cannot be empty"];
-    }
-    if (type !== "Hike" && type !== "Social" && type !== "Weekend") {
-      return [false, "Must select type"];
-    }
+
+  const isValid = (): [boolean, string | null] => {
+    if (title.trim() === '') return [false, "Title cannot be empty"];
+    if (type !== "Hike" && type !== "Social" && type !== "Weekend") return [false, "Must select type"];
+    if (endDate && endDate < startDate) return [false, "End date must be on or after start date"];
     return [true, null];
-  }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const [isValid, err] = isValidActivity(title, type);
+    const [valid, err] = isValid();
     setError(err);
-    if (isValid) {
-      doc.data = {
-        title, date: doc.data.date, type: convertType(type), misc
-      };
-      onSubmit(doc);
+    if (valid) {
+      onSubmit({
+        ...doc,
+        data: {
+          title,
+          date: parseLocalDate(startDate),
+          endDate: endDate ? parseLocalDate(endDate) : undefined,
+          type: convertType(type),
+          misc
+        }
+      });
       onClose();
     }
-  }
-  const tileDateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  };
+
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center ">
-      <div className="bg-white w-1/3 p-4 shadow-md rounded">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-gray-900/40">
+      <div className="bg-white w-80 sm:w-96 p-4 shadow-md rounded">
+        <h2 className="text-xl font-bold mb-4">{mode === 'edit' ? 'Edit Activity' : 'Add Activity'}</h2>
         <form onSubmit={handleSubmit}>
-          <h2 className="text-2xl font-bold mb-4">{tileDateFormat.format(doc.data.date)} Add Activity</h2>
-          {error && <div className={"text-red-500"}>{error}</div>}
-          <div className={"mb-4"}>
-            <label className={"block text-gray-700"}>Title:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="border border-gray-400 rounded px-4 py-2 w-full"
-              />
+          {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm" />
           </div>
-          <div className={"mb-4"}>
-            <label className={"block text-gray-700"}>Misc:</label>
-            <input
-              type="text"
-              value={misc}
-              onChange={(e) => setMisc(e.target.value)}
-              className="border border-gray-400 rounded px-4 py-2 w-full"
-              />
-          </div>
-          <div className={"mb-4"}>
-            <label htmlFor={"dropdown"} className={"block text-gray-700"}>Type:</label>
-            <select id={"dropdown"} value={type || ''} onChange={handleTypeChange}>
-              <option value=""> --Select-- </option>
-              <option value="Hike"> Hike </option>
-              <option value="Social"> Social </option>
-              <option value="Weekend"> Weekend </option>
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">Type</label>
+            <select value={type} onChange={(e) => setType(e.target.value)} className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm">
+              <option value=""> -- Select -- </option>
+              <option value="Hike">Hike</option>
+              <option value="Social">Social</option>
+              <option value="Weekend">Weekend</option>
             </select>
           </div>
-          <button className="px-2 mt-4 text-sm text-gray-500" type={"submit"}>Submit</button>
-          <button
-          className="px-2 mt-4 text-sm text-gray-500"
-          onClick={onClose}
-        >
-          Close
-        </button>
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">Start Date</label>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+              className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm" />
+          </div>
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">
+              End Date <span className="text-gray-400">(optional)</span>
+            </label>
+            <input type="date" min={startDate} value={endDate} onChange={(e) => setEndDate(e.target.value)}
+              className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm" />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Notes</label>
+            <input type="text" value={misc} onChange={(e) => setMisc(e.target.value)}
+              className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm" />
+          </div>
+          <div className="flex gap-2">
+            <button type="submit" className="px-4 py-1.5 bg-logoGreen-light border border-logoGreen-dark text-sm font-semibold rounded hover:bg-green-900/60">
+              {mode === 'edit' ? 'Save' : 'Add'}
+            </button>
+            <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-700">
+              Cancel
+            </button>
+          </div>
         </form>
-        
       </div>
     </div>
-  )
+  );
 }

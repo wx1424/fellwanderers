@@ -15,8 +15,8 @@ export default function UpcomingPage() {
       "activities", 
       (a, b) => a.date.getTime() - b.date.getTime(), 
       setActivityDocs, 
-      (a) => {a.date = new Date(a.date); return a},
-      (a) => {a.date = a.date.toDate(); return a as Activity}
+      (a) => { a.date = new Date(a.date); if (a.endDate) a.endDate = new Date(a.endDate); return a; },
+      (a) => { a.date = a.date.toDate(); if (a.endDate) a.endDate = a.endDate.toDate(); return a as Activity; }
       );
   }, []);
   return (

@@ -1,22 +1,40 @@
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Tab } from "@headlessui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightToBracket, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { signOut } from "firebase/auth";
+
+import { auth } from "../../firebase.ts";
+import { useAuth } from "../contexts/AuthContext.tsx";
+import LoginPopup from "./LoginPopup.tsx";
 
 export default function PageHeader() {
   const links: { id: number; link: string; text: string }[] = [
-    { id: 0, link: "/", text: "home" },
-    { id: 1, link: "/activities", text: "upcoming" },
-    { id: 2, link: "/committee", text: "committee" },
-    { id: 3, link: "/archive", text: "trip reports" },
-    { id: 4, link: "/faqs", text: "faqs" }
+    { id: 0, link: "/", text: "Home" },
+    { id: 1, link: "/activities", text: "Upcoming" },
+    { id: 2, link: "/committee", text: "Committee" },
+    { id: 3, link: "/archive", text: "Trip reports" },
+    { id: 4, link: "/faqs", text: "FAQs" }
   ];
   const location = useLocation();
   const page = links.filter((link) => link.link === location.pathname)[0].id;
+  const { isLoggedIn } = useAuth();
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+
+  const handleLogout = () => {
+    signOut(auth).catch((error) => console.error(error.message));
+  };
+
+  const btnStyle = "shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60";
+
   return (
     <div
       className={
         "shadow-md flex flex-col sm:flex-row space-y-2 justify-around items-center w-screen h-30 sm:px-4 py-2 sm:py-4 mb-4"
       }
     >
+      {showLoginPopup && <LoginPopup onClose={() => setShowLoginPopup(false)} />}
       <NavLink to={"/"} className={""}>
         <img
           className={"px-5 h-20 mx-auto"}
@@ -50,6 +68,16 @@ export default function PageHeader() {
           </Tab.List>
         </Tab.Group>
       </div>
+      {!isLoggedIn && (
+        <button className={btnStyle} onClick={() => setShowLoginPopup(true)}>
+          <FontAwesomeIcon icon={faArrowRightToBracket} /> Sign In
+        </button>
+      )}
+      {isLoggedIn && (
+        <button className={btnStyle} onClick={handleLogout}>
+          <FontAwesomeIcon icon={faArrowRightFromBracket} /> Sign Out
+        </button>
+      )}
     </div>
   );
 }

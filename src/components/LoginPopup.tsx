@@ -21,7 +21,7 @@ export default function LoginPopup({ onClose }: LoginPopupProps) {
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
       <div className="bg-white w-1/3 p-4 shadow-md rounded">
         <h2 className="text-2xl font-bold mb-4">Sign In</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
