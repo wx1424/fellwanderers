@@ -26,8 +26,8 @@ function HeroSection() {
       style={backgroundImageStyle}
     >
       <div className={"w-full flex flex-col space-y-2 px-10"}>
-        <h1 className={"font-helvetica-black italic text-4xl sm:text-6xl font-bold"}>fellwanderers</h1>
-        <h2 className={"text-2xl sm:text-4xl pb-5"}>Imperial's Hiking Society</h2>
+        <h1 className={"font-helvetica-black font-oblique text-4xl sm:text-6xl font-bold"}>fellwanderers</h1>
+        <h2 className={"text-2xl sm:text-4xl pb-5"}>Imperial College Hiking Club</h2>
         <div className={"flex flex-row justify-start space-x-5"}>
           <StyledLink
             href={joinLink}

@@ -17,3 +17,10 @@
 body {
   font-family: 'Helvetica LT', Helvetica, Arial, sans-serif;
 }
+
+@layer utilities {
+  .font-oblique {
+    transform: skewX(-14deg);
+    display: inline-block;
+  }
+}
