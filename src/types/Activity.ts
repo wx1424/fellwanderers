@@ -1,8 +1,9 @@
 export enum ActivityType {
   Hike,
   Social,
-  Blank,
-  Weekend
+  Weekend,
+  Tour,
+  Blank
 }
 
 export default interface Activity {

@@ -20,13 +20,16 @@ const typeToString = (type: ActivityType) => {
   if (type === ActivityType.Hike) return 'Hike';
   if (type === ActivityType.Social) return 'Social';
   if (type === ActivityType.Weekend) return 'Weekend';
+  if (type === ActivityType.Tour) return 'Tour';
   return '';
 };
 
 const convertType = (text: string) => {
   if (text === "Hike") return ActivityType.Hike;
   if (text === "Social") return ActivityType.Social;
-  return ActivityType.Weekend;
+  if (text === "Weekend") return ActivityType.Weekend;
+  if (text === "Tour") return ActivityType.Tour;
+  return '';
 };
 
 interface ActivityFormProps {
@@ -46,7 +49,7 @@ export default function ActivityPopup({ doc, onSubmit, onClose, mode = 'add' }: 
 
   const isValid = (): [boolean, string | null] => {
     if (title.trim() === '') return [false, "Title cannot be empty"];
-    if (type !== "Hike" && type !== "Social" && type !== "Weekend") return [false, "Must select type"];
+    if (type !== "Hike" && type !== "Social" && type !== "Weekend" && type !== "Tour") return [false, "Must select type"];
     if (endDate && endDate < startDate) return [false, "End date must be on or after start date"];
     return [true, null];
   };
@@ -83,9 +86,10 @@ export default function ActivityPopup({ doc, onSubmit, onClose, mode = 'add' }: 
             <label className="block text-sm text-gray-700 mb-1">Type</label>
             <select value={type} onChange={(e) => setType(e.target.value)} className="border border-gray-400 rounded px-3 py-1.5 w-full text-sm">
               <option value=""> -- Select -- </option>
-              <option value="Hike">Hike</option>
+              <option value="Hike">Day hike</option>
               <option value="Social">Social</option>
-              <option value="Weekend">Weekend</option>
+              <option value="Weekend">Weekend trip</option>
+              <option value="Tour">Tour</option>
             </select>
           </div>
           <div className="mb-3">

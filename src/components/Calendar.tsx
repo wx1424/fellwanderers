@@ -26,6 +26,7 @@ function colourActivity(type: ActivityType): string {
     case ActivityType.Hike:    return "bg-green-200";
     case ActivityType.Social:  return "bg-orange-200";
     case ActivityType.Weekend: return "bg-blue-200";
+    case ActivityType.Tour:    return "bg-yellow-200";
     default:                   return "bg-gray-100";
   }
 }
@@ -97,7 +98,7 @@ function ActivityChip({ doc, menuKey, openMenuKey, setOpenMenuKey, onDelete, onE
   return (
     <div className={`${colour} rounded px-1.5 py-0.5 flex justify-between items-start gap-1 relative`}>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-oblique font-semibold truncate">{doc.data.title}</p>
+        <p className="text-xs font-oblique font-semibold break-words">{doc.data.title}</p>
         {doc.data.misc && <p className="text-xs text-gray-500 break-words">{doc.data.misc}</p>}
       </div>
       {isLoggedIn && (
@@ -213,6 +214,21 @@ export default function Calendar({ activities, setActivities }: CalendarProps) {
         <button className={"bg-white hover:scale-y-110 font-bold py-2 px-4 rounded-lg"} onClick={nextMonth} disabled={nextDisabled}>
           {!nextDisabled && <FontAwesomeIcon icon={faChevronRight} />}
         </button>
+
+        <div className={"flex flex-row justify-end sm:justify-end items-center space-x-2 sm:space-x-2 px-1 sm:px-2"}>
+          <div className={"bg-green-200 rounded px-1.5 py-0.5"}>
+            <span className={"text-xs font-semibold font-oblique"}>Day hike</span>
+          </div>
+          <div className={"bg-orange-200 rounded px-1.5 py-0.5"}>
+            <span className={"text-xs font-semibold font-oblique"}>Social</span>
+          </div>
+          <div className={"bg-blue-200 rounded px-1.5 py-0.5"}>
+            <span className={"text-xs font-semibold font-oblique"}>Weekend trip</span>
+          </div>
+          <div className={"bg-yellow-200 rounded px-1.5 py-0.5"}>
+            <span className={"text-xs font-semibold font-oblique"}>Tour</span>
+          </div>
+        </div>
         {isLoggedIn && (
           <>
             <button className={btnStyle} onClick={() => openAddPopup()}>
