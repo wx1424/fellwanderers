@@ -20,7 +20,7 @@ body {
 
 @layer utilities {
   .font-oblique {
-    transform: skewX(-14deg);
+    transform: skewX(-10deg);
     display: inline-block;
   }
 }

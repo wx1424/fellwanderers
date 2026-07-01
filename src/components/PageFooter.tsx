@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInstagram } from "@fortawesome/free-brands-svg-icons";
+import { faInstagram, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faBagShopping, faArrowRightToBracket,  faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
@@ -9,6 +9,7 @@ import { useAuth } from "../contexts/AuthContext.tsx";
 import LoginPopup from "./LoginPopup.tsx";
 import StyledLink from "../components/StyledLink.tsx";
 
+const whatsappLink = "https://chat.whatsapp.com/C34zRmjyk8vCTr9XKHxlWU"
 const instaLink = "https://www.instagram.com/icfellwanderers";
 const shopLink = "https://www.imperialcollegeunion.org/student-group-shop?groupId=49";
 const mailLink = "https://forms.office.com/Pages/ResponsePage.aspx?id=B3WJK4zudUWDC0-CZ8PTBwDrjO1uK9tNvqNaN-rdDE5UNktTTFBBT1kwWFRFTVRTNUtMNzk3UkpDWCQlQCN0PWcu";
@@ -63,7 +64,15 @@ export default function PageFooter() {
           "flex flex-row justify-center sm:justify-end space-x-2 sm:space-x-5 items-center"
         }
       >
-        
+        <StyledLink
+          href={whatsappLink}
+          className={linkStyle}
+          children={
+            <div>
+              <FontAwesomeIcon icon={faWhatsapp} /> WhatsApp
+            </div>
+          }
+        />
         <StyledLink
           href={instaLink}
           className={linkStyle}

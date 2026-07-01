@@ -3,11 +3,11 @@ import { Tab } from "@headlessui/react";
 
 export default function PageHeader() {
   const links: { id: number; link: string; text: string }[] = [
-    { id: 0, link: "/", text: "Home" },
-    { id: 1, link: "/activities", text: "Upcoming" },
-    { id: 2, link: "/committee", text: "Committee" },
-    { id: 3, link: "/archive", text: "Archive" },
-    { id: 4, link: "/faqs", text: "FAQs" }
+    { id: 0, link: "/", text: "home" },
+    { id: 1, link: "/activities", text: "upcoming" },
+    { id: 2, link: "/committee", text: "committee" },
+    { id: 3, link: "/archive", text: "trip reports" },
+    { id: 4, link: "/faqs", text: "faqs" }
   ];
   const location = useLocation();
   const page = links.filter((link) => link.link === location.pathname)[0].id;
@@ -43,7 +43,7 @@ export default function PageHeader() {
                     )
                   }
                 >
-                  {link.text}
+                  <span className={"font-oblique"}>{link.text}</span>
                 </Tab>
               </NavLink>
             ))}
