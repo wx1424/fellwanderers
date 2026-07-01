@@ -1,68 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { getDownloadURL, listAll, ref } from "firebase/storage";
-
-import { storage } from "../../firebase.ts";
 
 interface SlideshowProps {
-  directory: string;
+  images: string[];
 }
 
-export default function ImageSlideshow({ directory }: SlideshowProps) {
+export default function ImageSlideshow({ images }: SlideshowProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  useEffect(() => {
-    async function fetchImageURLs() {
-      try {
-        const dirRef = ref(storage, directory);
-        const listResult = await listAll(dirRef);
-        const urlPromises = listResult.items.map(async (itemRef) => {
-          return getDownloadURL(itemRef);
-        });
-        const urls = await Promise.all(urlPromises);
-        setImageUrls(urls);
-      } catch (error) {
-        console.error("Error fetching image URLs:", error);
-      }
-    }
-
-    fetchImageURLs().catch((error) => {
-      console.error("Error fetching image URLs:", error);
-    });
-  }, [directory]);
+  if (!images || images.length === 0) {
+    return (
+      <div className={"relative w-full h-full overflow-hidden flex items-center justify-center bg-gray-100 text-gray-400"}>
+        No images
+      </div>
+    );
+  }
 
   const nextSlide = () => {
-    setCurrentSlide((currentSlide + 1) % imageUrls.length);
+    setCurrentSlide((currentSlide + 1) % images.length);
   };
   const prevSlide = () => {
-    setCurrentSlide((currentSlide - 1 + imageUrls.length) % imageUrls.length);
+    setCurrentSlide((currentSlide - 1 + images.length) % images.length);
   };
 
   return (
     <div className={"relative w-full h-full overflow-hidden flex items-center"}>
       <img
-        src={imageUrls[currentSlide]}
+        src={images[currentSlide]}
         alt={"Slideshow Image"}
         className={"object-cover w-full h-full"}
       />
       <div className={"absolute top-1/2 left-0 right-0 flex justify-between"}>
         <button
-          className={
-            "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-l"
-          }
+          className={"bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-l"}
           onClick={prevSlide}
         >
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
         <button
-          className={
-            "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-l"
-          }
+          className={"bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-l"}
           onClick={nextSlide}
         >
           <FontAwesomeIcon icon={faChevronRight} />

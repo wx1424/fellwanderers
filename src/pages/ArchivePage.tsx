@@ -8,8 +8,7 @@ import Archive from "../types/Archive.ts";
 import { setCollectionState, Doc } from "../../firebaseAPI";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import { AddArchiveForm, EditArchiveForm, DeleteArchiveForm } from "../components/ArchiveForms.tsx";
-import { storage, db } from "../../firebase.ts";
-import { ref, uploadBytes, deleteObject, listAll } from "firebase/storage";
+import { db } from "../../firebase.ts";
 import { doc, addDoc, collection, deleteDoc, setDoc } from "firebase/firestore";
 
 interface CommitteeUpdatesProps {
@@ -17,21 +16,7 @@ interface CommitteeUpdatesProps {
   setArchiveDocs: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>;
 }
 
-const handleAddArchiveSubmit = (archive: Archive, images: FileList, archiveDocs: Doc<Archive>[], setState: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>) => {
-  const handleUpload = () => {
-    if (images) {
-      const storageRef = ref(storage, archive.directory);
-      for (let i = 0; i < images.length; i++) {
-        const file = images[i];
-        const childRef = ref(storageRef, `${file.name}`);
-        uploadBytes(childRef, file)
-          .catch((error) => {
-            console.error('Error uploading file:', error);
-          }
-        );
-      }
-    }
-  }
+const handleAddArchiveSubmit = (archive: Archive, archiveDocs: Doc<Archive>[], setState: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>) => {
   const newDoc: Doc<Archive> = { id: null, data: archive };
   if (archive.order <= archiveDocs.length) {
     archiveDocs.filter((doc) => doc.data.order >= archive.order)
@@ -39,12 +24,11 @@ const handleAddArchiveSubmit = (archive: Archive, images: FileList, archiveDocs:
   }
   archiveDocs.push(newDoc);
   setState(archiveDocs.sort((a, b) => a.data.order - b.data.order));
-  handleUpload();
-}
+};
 
-const isValidAddArchive = (archive: Archive, selectedFiles: FileList | null): [boolean, string | null] => {
-  if (!selectedFiles) {
-    return [false, "No images selected"];
+const isValidAddArchive = (archive: Archive): [boolean, string | null] => {
+  if (archive.images.length === 0) {
+    return [false, "No images added"];
   }
   if (archive.order === 0) {
     return [false, "Archive number cannot be 0"];
@@ -55,19 +39,16 @@ const isValidAddArchive = (archive: Archive, selectedFiles: FileList | null): [b
   if (archive.desc.trim() === '') {
     return [false, "Archive description cannot be empty"];
   }
-  if (archive.directory.trimEnd() === '') {
-    return [false, "Archive directory empty, message Euan"];
-  }
   return [true, null];
-}
+};
 
-const handleEditArchiveSubmit = (newArchive: Archive, oldOrder: number, archiveDocs: Doc<Archive>[], setState: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>) => {  
+const handleEditArchiveSubmit = (newArchive: Archive, oldOrder: number, archiveDocs: Doc<Archive>[], setState: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>) => {
   if (newArchive.order === oldOrder) {
     archiveDocs.forEach((doc) => {
       if (doc.data.order === oldOrder) {
         doc.data = newArchive;
       }
-    })
+    });
   } else {
     archiveDocs.forEach((doc) => {
       if (doc.data.order === oldOrder) {
@@ -75,10 +56,10 @@ const handleEditArchiveSubmit = (newArchive: Archive, oldOrder: number, archiveD
       } else if (doc.data.order === newArchive.order) {
         doc.data.order = oldOrder;
       }
-    })
+    });
   }
   setState(archiveDocs.sort((a, b) => a.data.order - b.data.order));
-}
+};
 
 const isValidEditArchive = (newArchive: Archive, order: number, archiveDocs: Doc<Archive>[]): [boolean, string | null] => {
   if (order > archiveDocs.length) {
@@ -93,18 +74,15 @@ const isValidEditArchive = (newArchive: Archive, order: number, archiveDocs: Doc
   if (newArchive.desc.trim() === '') {
     return [false, "Archive description cannot be empty"];
   }
-  if (newArchive.directory.trimEnd() === '') {
-    return [false, "Archive directory empty, message Euan"];
-  }
   return [true, null];
-}
+};
 
 const isValidDeleteArchive = (title: string, archiveDocs: Doc<Archive>[]): [boolean, string | null] => {
   if (archiveDocs.some((doc) => doc.data.title === title)) {
     return [true, null];
   }
   return [false, "Cannot delete non-existent archive"];
-}
+};
 
 function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdatesProps) {
   const baseTabStyle = "w-full rounded-md px-1 sm:px-2.5 py-2 lg:py-2.5 text-sm leading-5 text-black font-semibold " +
@@ -114,7 +92,7 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
     selected ? "bg-white shadow" : "hover:bg-white/20",
   );
   const [docsToDelete, setDocsToDelete] = useState<Doc<Archive>[]>([]);
-  
+
   const handleDeleteArchiveSubmit = (title: string, archiveDocs: Doc<Archive>[], setState: React.Dispatch<React.SetStateAction<Doc<Archive>[]>>) => {
     const newArchiveDocs = archiveDocs.filter((doc) => doc.data.title !== title);
     const oldDoc = archiveDocs.filter((doc) => doc.data.title === title)[0];
@@ -123,9 +101,9 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
       if (doc.data.order > oldDoc.data.order) {
         doc.data.order--;
       }
-    })
+    });
     setState(newArchiveDocs);
-  }
+  };
 
   const handleSaveChangesClick = () => {
     archiveDocs.forEach(async (archiveDoc) => {
@@ -136,23 +114,14 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
         archiveDoc.id = docRef.id;
       }
     });
-    docsToDelete.forEach(async ({data, id}) => {
+    docsToDelete.forEach(async ({ id }) => {
       if (id) {
-        console.log("Deleting: ", id, data);
         await deleteDoc(doc(db, "archive", id));
-        try {
-          const bucket = ref(storage, data.directory);
-          const files = await listAll(bucket);
-          await Promise.all(files.items.map((object) => deleteObject(object)));
-        } catch (error) {
-          console.error("Error deleting files: ", error);
-        }
       }
     });
     alert("Saved Changes");
-    // TODO: Deal with disjoint uploads of images
     localStorage.setItem("archive", JSON.stringify(archiveDocs));
-  }
+  };
 
   return (
     <div>
@@ -162,24 +131,12 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
                 "max-h-12 flex lg:inline-flex w-full lg:min-w-max justify-around lg:justify-center items-center rounded-xl bg-logoGreen-light border-logoGreen-dark border py-2 px-1 lg:space-x-2"
               }
             >
-          <Tab
-                    className={({ selected }) =>
-                      styleTab(selected)
-                    }
-                  >Add Archive</Tab>
-          <Tab
-                    className={({ selected }) =>
-                    styleTab(selected)
-                  }
-                  >Edit Archive</Tab>
-          <Tab
-                    className={({ selected }) =>
-                    styleTab(selected)
-                  }
-                  >Delete Archive</Tab>
-      </Tab.List> 
+          <Tab className={({ selected }) => styleTab(selected)}>Add Archive</Tab>
+          <Tab className={({ selected }) => styleTab(selected)}>Edit Archive</Tab>
+          <Tab className={({ selected }) => styleTab(selected)}>Delete Archive</Tab>
+      </Tab.List>
       <Tab.Panel>
-        <AddArchiveForm 
+        <AddArchiveForm
           onSubmit={handleAddArchiveSubmit}
           isValidAdd={isValidAddArchive}
           archiveDocs={[...archiveDocs]}
@@ -187,7 +144,7 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
         />
       </Tab.Panel>
       <Tab.Panel>
-        <EditArchiveForm 
+        <EditArchiveForm
           onSubmit={handleEditArchiveSubmit}
           isValidEdit={isValidEditArchive}
           archiveDocs={[...archiveDocs]}
@@ -195,7 +152,7 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
         />
       </Tab.Panel>
       <Tab.Panel>
-        <DeleteArchiveForm 
+        <DeleteArchiveForm
           onSubmit={handleDeleteArchiveSubmit}
           isValidDelete={isValidDeleteArchive}
           archiveDocs={[...archiveDocs]}
@@ -207,8 +164,7 @@ function ArchiveCommitteeUpdates({ archiveDocs, setArchiveDocs }: CommitteeUpdat
         <p>Save Changes</p>
       </button>
     </div>
-  )
-
+  );
 }
 
 export default function ArchivePage() {
@@ -217,13 +173,14 @@ export default function ArchivePage() {
 
   useEffect(() => {
     setCollectionState<Archive>(
-      "archive", 
-      (a, b) => a.order - b.order, 
-      setArchiveDocs, 
+      "archive",
+      (a, b) => a.order - b.order,
+      setArchiveDocs,
       (a) => a,
-      (a) => a as Archive
-      )
+      (a) => ({ ...a, images: (a as any).images ?? [] }) as Archive
+    );
   }, []);
+
   return (
     <>
       <PageHeader />
@@ -237,10 +194,9 @@ export default function ArchivePage() {
             the hikes we've been on in the past!
           </p>
         </div>
-        {
-          isLoggedIn && 
+        {isLoggedIn &&
           <div className={"px-4 lg:px-10 pt-5"}>
-            <ArchiveCommitteeUpdates 
+            <ArchiveCommitteeUpdates
               archiveDocs={[...archiveDocs]}
               setArchiveDocs={setArchiveDocs}
             />
@@ -251,7 +207,7 @@ export default function ArchivePage() {
             <HikeArchive
               title={data.title}
               desc={data.desc}
-              directory={data.directory}
+              images={data.images}
               order={data.order}
               route={data.route}
             />

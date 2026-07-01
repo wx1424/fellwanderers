@@ -36,7 +36,7 @@ export default function HikeArchive(archive: Archive) {
           <p className={"text-sm lg:text-base"}>{archive.desc}</p>
         </div>
         <div className={"flex-1 h-full"}>
-          <ImageSlideshow directory={archive.directory} />
+          <ImageSlideshow images={archive.images} />
         </div>
       </div>
     </div>

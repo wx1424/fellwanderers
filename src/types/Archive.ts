@@ -1,7 +1,7 @@
 export default interface Archive {
   title: string;
   desc: string;
-  directory: string;
+  images: string[];
   order: number;
   route: string;
 }
