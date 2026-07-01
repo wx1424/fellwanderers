@@ -14,7 +14,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCbfuHvkr7s8u88FTfz9kFMlMQ6cDIB7wQ",
   authDomain: "icfellwanderers.firebaseapp.com",
   projectId: "icfellwanderers",
-  storageBucket: "icfellwanderers.firebasestorage.app",
+  storageBucket: "icfellwanderers.appspot.com",
   messagingSenderId: "954474029334",
   appId: "1:954474029334:web:0e740663eecbeb70af7037"
 };
