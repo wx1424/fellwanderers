@@ -13,6 +13,7 @@
   font-family: 'Helvetica Black Oblique';
   src: url('/fonts/helvetica_black_oblique-webfont.woff2') format('woff2');
   font-style: italic;
+  font-display: swap;
 }
 
 body {
