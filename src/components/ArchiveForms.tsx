@@ -91,7 +91,7 @@ export default function ArchiveFormPage({ initialDoc, archiveDocs, onAdd, onEdit
       {/* Top bar */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm">
         <button type="button" onClick={onClose} className="text-sm text-gray-500 hover:text-gray-800 px-2 py-1 rounded hover:bg-gray-100">
-          ✕ Cancel
+          Cancel
         </button>
         <span className="font-bold text-lg flex-1 text-gray-800">
           {mode === 'add' ? 'Add Trip Report' : 'Edit Trip Report'}
@@ -157,10 +157,10 @@ export default function ArchiveFormPage({ initialDoc, archiveDocs, onAdd, onEdit
               <ToolbarButton onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} active={editor?.isActive('heading', { level: 2 })}>H2</ToolbarButton>
               <ToolbarButton onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} active={editor?.isActive('heading', { level: 3 })}>H3</ToolbarButton>
               <div className="w-px h-5 bg-gray-300 mx-1" />
-              <ToolbarButton onClick={() => editor?.chain().focus().toggleBulletList().run()} active={editor?.isActive('bulletList')}>• List</ToolbarButton>
+              <ToolbarButton onClick={() => editor?.chain().focus().toggleBulletList().run()} active={editor?.isActive('bulletList')}>List</ToolbarButton>
               <div className="w-px h-5 bg-gray-300 mx-1" />
               <div className="flex items-center gap-1">
-                <ToolbarButton onClick={() => setImgBarOpen((v) => !v)} active={imgBarOpen}>🖼 Image</ToolbarButton>
+                <ToolbarButton onClick={() => setImgBarOpen((v) => !v)} active={imgBarOpen}>Image</ToolbarButton>
                 {imgBarOpen && (
                   <>
                     <input
