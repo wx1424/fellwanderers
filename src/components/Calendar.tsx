@@ -210,7 +210,7 @@ export default function Calendar({ activities, setActivities }: CalendarProps) {
         <button className={"bg-white hover:scale-y-110 py-2 px-4 rounded-lg"} onClick={prevMonth} disabled={prevDisabled}>
           {!prevDisabled && <FontAwesomeIcon icon={faChevronLeft} />}
         </button>
-        <h1 className={"text-xl xl:text-2xl font-bold"}>{titleDateFormat.format(monthStart)}</h1>
+        <h1 className={"font-oblique font-helvetica-black text-xl xl:text-2xl font-bold"}>{titleDateFormat.format(monthStart)}</h1>
         <button className={"bg-white hover:scale-y-110 font-bold py-2 px-4 rounded-lg"} onClick={nextMonth} disabled={nextDisabled}>
           {!nextDisabled && <FontAwesomeIcon icon={faChevronRight} />}
         </button>

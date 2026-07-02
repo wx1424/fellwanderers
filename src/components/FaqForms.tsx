@@ -1,235 +1,72 @@
 import React, { useState } from 'react';
 import { Faq } from "../types/Faq";
-import { Doc } from "../../firebaseAPI"
+import { Doc } from "../../firebaseAPI";
+
+const btnStyle = "shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60";
+const inputStyle = "border border-gray-400 rounded px-3 py-1.5 w-full text-sm";
 
 type SetFaqDocState = React.Dispatch<React.SetStateAction<Doc<Faq>[]>>;
-type AddFaqFormSubmit = (faq: Faq, faqDocs: Doc<Faq>[], setState: SetFaqDocState) => void;
-interface AddFaqFormProps { 
-  onSubmit: AddFaqFormSubmit;
-  isValidAdd: (faq: Faq) => [boolean, string | null];
+
+interface FaqFormPopupProps {
+  initialFaq: Faq | null;
   faqDocs: Doc<Faq>[];
-  setState: SetFaqDocState;
+  onAdd: (faq: Faq, docs: Doc<Faq>[], setState: SetFaqDocState) => void;
+  onEdit: (newFaq: Faq, oldOrder: number) => void;
+  setFaqDocs: SetFaqDocState;
+  onClose: () => void;
 }
 
-export function AddFaqForm({ onSubmit, isValidAdd, faqDocs, setState }: AddFaqFormProps) {
-  const [order, setOrder] = useState<number>(0);
-  const [question, setQuestion] = useState<string>('');
-  const [answer, setAnswer] = useState<string>('');
+export default function FaqFormPopup({ initialFaq, faqDocs, onAdd, onEdit, setFaqDocs, onClose }: FaqFormPopupProps) {
+  const mode = initialFaq === null ? 'add' : 'edit';
+  const [order, setOrder] = useState(initialFaq?.order ?? faqDocs.length + 1);
+  const [question, setQuestion] = useState(initialFaq?.question ?? '');
+  const [answer, setAnswer] = useState(initialFaq?.answer ?? '');
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const faq: Faq = {
-      order, question, answer
-    };
-
-    const[isValid, err] = isValidAdd(faq);
-    setError(err);
-    if (isValid) {
-      onSubmit(faq, faqDocs, setState);
-      setOrder(0);
-      setQuestion('');
-      setAnswer('');
-    }    
-  };
-
-  return (
-    <div className={"p-2"}>
-      <form onSubmit={handleSubmit}>
-      {error && <div className={"text-red-500"}>{error}</div>}
-      <div>
-        <label className={"block mb-2"}>
-          {"Number: "}
-          <input
-            type="number"
-            min="1"
-            max={faqDocs.length + 1}
-            value={order}
-            onChange={(e) => setOrder(parseInt(e.target.value))}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label className={"block mb-2"}>
-          {"Question: "}
-          <input
-            className={"mx-2 border border-black"}
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label className={"mb-2 flex items-start"}>
-          {"Answer: "}
-          <textarea
-            className={"w-full mx-2 border border-black"}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <button 
-      type="submit" className={"shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60"}>Submit</button>
-    </form>
-  </div>
-  )
-}
-
-type EditFaqFormSubmit = (newFaq: Faq, oldNumber: number, faqDocs: Doc<Faq>[], setState: SetFaqDocState) => void;
-interface EditFaqFormProps {
-  onSubmit: EditFaqFormSubmit;
-  isValidEdit: (newFaq: Faq, num: number, faqDocs: Doc<Faq>[]) => [boolean, string | null];
-  faqDocs: Doc<Faq>[];
-  setState: SetFaqDocState;
-}
-
-export function EditFaqForm({ onSubmit, isValidEdit, faqDocs, setState}: EditFaqFormProps) {
-  const [oldOrder, setOldOrder] = useState<number>(0);
-  const [newOrder, setNewOrder] = useState<number>(0);
-  const [question, setQuestion] = useState<string>('');
-  const [answer, setAnswer] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newFaq: Faq = {
-      order: newOrder, question, answer
-    };
-
-    const [isValid, err] = isValidEdit(newFaq, oldOrder, faqDocs);
-    setError(err);
-    if (isValid) {
-      onSubmit(newFaq, oldOrder, faqDocs, setState);
-      setOldOrder(0);
-      setNewOrder(0);
-      setQuestion('');
-      setAnswer('');
+    if (question.trim() === '') { setError("Question cannot be empty"); return; }
+    if (answer.trim() === '') { setError("Answer cannot be empty"); return; }
+    const faq: Faq = { order, question, answer };
+    if (mode === 'add') {
+      onAdd(faq, faqDocs, setFaqDocs);
+    } else {
+      onEdit(faq, initialFaq!.order);
     }
+    onClose();
   };
 
-  const handleOldOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const order = parseInt(e.target.value, 10);
-    setOldOrder(order);
-    const doc = faqDocs.find((doc) => doc.data.order === order) as Doc<Faq>;
-    setNewOrder(order);
-    setQuestion(doc.data.question);
-    setAnswer(doc.data.answer);
-  }
-  const handleNewOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewOrder(parseInt(e.target.value, 10));
-  }
-  // TODO: Auto-populate fields with oldNumber's data
+  const count = mode === 'add' ? faqDocs.length + 1 : faqDocs.length;
+  const orderOptions = Array.from({ length: count }, (_, i) => i + 1);
+
   return (
-    <div className={"p-2"}>
-      <form onSubmit={handleSubmit}>
-      {error && <div className={"text-red-500"}>{error}</div>}
-      <div>
-        <label htmlFor={"dropdown"}  className={"block mb-2"}>
-          {"Select FAQ: "}
-        </label>
-        <select id={"dropdown"} value={oldOrder || ''} onChange={handleOldOptionChange}>
-          <option value=""> -- Select -- </option>
-          {faqDocs.map((faqDoc, index) => (
-            // TODO: See if value can be changed to id for ease
-              <option key={index} value={faqDoc.data.order}>
-                {faqDoc.data.order}
-              </option>
-          ))
-          }
-        </select>
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-gray-900/40">
+      <div className="bg-white w-80 sm:w-96 p-4 shadow-md rounded">
+        <h2 className="text-xl font-bold mb-4">{mode === 'add' ? 'Add FAQ' : 'Edit FAQ'}</h2>
+        <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">Number</label>
+            <select value={order} onChange={(e) => setOrder(parseInt(e.target.value))} className={inputStyle}>
+              {orderOptions.map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label className="block text-sm text-gray-700 mb-1">Question</label>
+            <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} className={inputStyle} />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Answer</label>
+            <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} rows={4} className={inputStyle} />
+          </div>
+          <div className="flex gap-2">
+            <button type="submit" className={btnStyle}>{mode === 'add' ? 'Add' : 'Save'}</button>
+            <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+          </div>
+        </form>
       </div>
-      <div>
-        <label htmlFor={"dropdown"}  className={"block mb-2"}>
-          {"New Number: "}
-        </label>
-        <select id={"dropdown"} value={newOrder || ''} onChange={handleNewOptionChange}>
-          <option value=""> -- Select -- </option>
-          {faqDocs.map((faqDoc, index) => (
-              <option key={index} value={faqDoc.data.order}>
-                {faqDoc.data.order}
-              </option>
-          ))
-          }
-        </select>
-      </div>
-      <div>
-        <label className={"block mb-2"}>
-          {"Question: "}
-          <input
-            className={"mx-2 border border-black"}
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label className={"mb-2 flex items-start"}>
-          {"Answer: "}
-          <textarea
-            className={"w-full mx-2 border border-black"}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <button type="submit" className={"shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60"}>Submit</button>
-    </form>
-  </div>
-  )
-}
-
-type DeleteFaqFormSubmit = (faqNumber: number, faqDocs: Doc<Faq>[], setState: SetFaqDocState) => void;
-interface DeleteFaqFormProps {
-  onSubmit: DeleteFaqFormSubmit;
-  isValidDelete: (faqNumber: number, faqDocs: Doc<Faq>[]) => [boolean, string | null];
-  faqDocs: Doc<Faq>[];
-  setState: SetFaqDocState;
-}
-
-export function DeleteFaqForm({ onSubmit, isValidDelete, faqDocs, setState}: DeleteFaqFormProps) {
-  const [number, setNumber] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const [isValid, err] = isValidDelete(number, faqDocs);
-    setError(err);
-    if (isValid) {
-      onSubmit(number, faqDocs, setState);
-      setNumber(0);
-    }
-  };
-  const handleOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNumber(parseInt(e.target.value, 10));
-  }
-  return (
-    <div className={"p-2"}>
-      <form onSubmit={handleSubmit}>
-      {error && <div className={"text-red-500"}>{error}</div>}
-      <div>
-        <label htmlFor={"dropdown"}  className={"block mb-2"}>
-          {"Select Number: "}
-        </label>
-        <select id={"dropdown"} value={number || ''} onChange={handleOptionChange}>
-          <option value=""> -- Select -- </option>
-          {faqDocs.map((faqDoc, index) => (
-              <option key={index} value={faqDoc.data.order}>
-                {faqDoc.data.order}
-              </option>
-          ))
-          }
-        </select>
-      </div>
-      <button type="submit" className={"shadow-md inline-block p-2 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60"}>Submit</button>
-    </form>
-  </div>
-  )
+    </div>
+  );
 }

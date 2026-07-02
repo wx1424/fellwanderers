@@ -83,7 +83,7 @@ export default function CommitteePage() {
       <div className="bg-white py-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-8 px-6 lg:px-8 lg:grid-cols-3">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet your committee</h2>
+            <h2 className="font-helvetica-black font-oblique text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet your committee!</h2>
             <p className="mt-6 sm:text-lg leading-8 text-gray-600">
               We're here to assist and support you on your hiking adventures. Whether you're a seasoned hiker or new to the trail, our committee members are ready to help.
               For any enquiries, ideas, or assistance, feel free to email us at <a href={"mailto:fellsoc@imperial.ac.uk"} className={"underline text-blue-600 hover:text-blue-800 visited:text-purple-600"} target={"_blank"}>fellsoc@imperial.ac.uk</a>, or message us through the WhatsApp chat. Let's embark on unforgettable hiking experiences together!

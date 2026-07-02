@@ -18,7 +18,12 @@ export default function PageHeader() {
     { id: 4, link: "/faqs", text: "FAQs" }
   ];
   const location = useLocation();
-  const page = links.filter((link) => link.link === location.pathname)[0].id;
+  const found = links.find((link) =>
+    link.link === '/'
+      ? location.pathname === '/'
+      : location.pathname === link.link || location.pathname.startsWith(link.link + '/')
+  );
+  const page = found?.id ?? -1;
   const { isLoggedIn } = useAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
@@ -38,7 +43,7 @@ export default function PageHeader() {
       <NavLink to={"/"} className={""}>
         <img
           className={"px-5 h-20 mx-auto"}
-          src={"logo.png"}
+          src={"/logo.png"}
           alt={"society logo"}
         />
       </NavLink>
@@ -61,7 +66,7 @@ export default function PageHeader() {
                     )
                   }
                 >
-                  <span className={"font-oblique"}>{link.text}</span>
+                  <span>{link.text}</span>
                 </Tab>
               </NavLink>
             ))}

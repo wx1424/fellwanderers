@@ -78,7 +78,7 @@ function StickyDescription() {
       title: "Explore Nature, Create Memories",
       para: "But we're more than just a hiking club; we're a community of like-minded individuals who share a passion for the great outdoors. When you join us, you're not just signing up for hikes; you're joining a group of kindred spirits who relish the opportunity to escape the bustling city of London and immerse themselves in the tranquility of nature. Our hikes aren't just about the breathtaking views and challenging trails; they're about the connections you make and the conversations you have along the way.",
       image: "hike_pics/bergamesque-alps-2025.jpg",
-      alt: "Bergamesque Alpss 2025"
+      alt: "Bergamesque Alps 2025"
     },
     {
       title: "Hiking and So Much More",
@@ -101,7 +101,7 @@ function StickyDescription() {
             {/* Text Section */}
             <div className="h-fit bg-gray-200">
                 <div className="h-full mx-auto lg:w-1/3 p-4 flex flex-col justify-center">
-                  <h1 className="text-xl font-semibold text-left text-gray-800">
+                  <h1 className="font-oblique text-xl font-semibold text-left text-gray-800">
                     {desc.title}
                   </h1>
                   <p className="my-2 text-lg text-gray-600 text-left">

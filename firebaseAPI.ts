@@ -77,7 +77,7 @@ async function fetchCollectionAndCache<T>(dataName: string, order: Order<T>, set
 export function setCollectionState<T>(dataName: string, order: Order<T>, setCollection: SetCollection<T>, transform: TransformForEach<T>, firestoreTransform: TransformFromFirestore<T>) {
   const cachedCollection = getCachedCollection<T>(dataName, transform);
   if (cachedCollection) {
-    setCollection(cachedCollection);
+    setCollection(cachedCollection.sort((a: Doc<T>, b: Doc<T>) => order(a.data, b.data)));
   } else {
     fetchCollectionAndCache<T>(dataName, order, setCollection, firestoreTransform)
       .catch((error) => {
@@ -92,21 +92,21 @@ export function setCollectionState<T>(dataName: string, order: Order<T>, setColl
  * @param docsToAdd
  * @param docsToDelete
  */
-export function handleSaveChangesClick<T extends WithFieldValue<DocumentData>>(dataName: string, docsToAdd: Doc<T>[], docsToDelete: Doc<T>[]) {
-  docsToDelete.forEach(async ({data, id}) => {
+export async function handleSaveChangesClick<T extends WithFieldValue<DocumentData>>(dataName: string, docsToAdd: Doc<T>[], docsToDelete: Doc<T>[]) {
+  await Promise.all(docsToDelete.map(async ({ data, id }) => {
     if (id) {
       await deleteDoc(doc(db, dataName, id));
       console.log("Deleted: ", data);
     }
-  });
-  docsToAdd.forEach(async (docToAdd) => {
+  }));
+  await Promise.all(docsToAdd.map(async (docToAdd) => {
     if (docToAdd.id) {
       await setDoc(doc(db, dataName, docToAdd.id), docToAdd.data);
     } else {
       const docRef = await addDoc(collection(db, dataName), docToAdd.data);
       docToAdd.id = docRef.id;
     }
-  });
+  }));
   alert("Saved Changes");
   localStorage.setItem(dataName, JSON.stringify(docsToAdd));
 }
