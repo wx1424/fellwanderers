@@ -109,9 +109,8 @@ export default function ArchivePage() {
           <h2 className="font-helvetica-black font-oblique text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Trip reports
           </h2>
-          <p className="mt-3 text-lg leading-8 text-gray-600">
-            Looking for some hiking inspiration? Here's a selection of some trip reports for
-            the hikes we've been on in the past!
+          <p className="mt-2 text-lg leading-8 text-gray-600">
+            Interested in what we've been up to in the past? Look no further: here we have a collection of reports from our previous trips for your perusal. If you have been on a trip and would like to write or contribute to a report, please get in touch! We'd love to hear about your experiences!
           </p>
         </div>
         {isLoggedIn && (

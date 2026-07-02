@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { useEditor, EditorContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
-import { Node, mergeAttributes } from '@tiptap/core';
+import React, { useState } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Archive from "../types/Archive";
@@ -8,91 +8,6 @@ import { Doc } from "../../firebaseAPI";
 
 const inputStyle = "border border-gray-400 rounded px-3 py-1.5 w-full text-sm";
 const btnStyle = "shadow-md inline-block px-3 py-1.5 bg-logoGreen-light border-logoGreen-dark border text-xs sm:text-sm font-semibold rounded-md no-underline hover:bg-green-900/60";
-
-// ─── Resizable image node view ───────────────────────────────────────────────
-
-function ResizableImageView({ node, updateAttributes, selected }: any) {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const startX = useRef(0);
-  const startW = useRef(0);
-
-  const onHandleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startX.current = e.clientX;
-    startW.current = imgRef.current?.offsetWidth ?? 400;
-
-    const onMove = (ev: MouseEvent) => {
-      const newW = Math.max(80, startW.current + (ev.clientX - startX.current));
-      updateAttributes({ width: newW });
-    };
-    const onUp = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }, [updateAttributes]);
-
-  const width = node.attrs.width ? `${node.attrs.width}px` : '100%';
-
-  return (
-    <NodeViewWrapper style={{ display: 'block', width, position: 'relative', margin: '1rem 0' }}>
-      <img
-        ref={imgRef}
-        src={node.attrs.src}
-        alt={node.attrs.alt ?? ''}
-        draggable={false}
-        style={{ width: '100%', display: 'block', borderRadius: '0.375rem' }}
-        className={selected ? 'ring-2 ring-blue-400' : ''}
-      />
-      {selected && (
-        <div
-          onMouseDown={onHandleMouseDown}
-          style={{
-            position: 'absolute', right: -6, top: '50%', transform: 'translateY(-50%)',
-            width: 12, height: 36, background: '#3b82f6', borderRadius: 4,
-            cursor: 'col-resize', zIndex: 10,
-          }}
-        />
-      )}
-    </NodeViewWrapper>
-  );
-}
-
-const ResizableImage = Node.create({
-  name: 'image',
-  group: 'block',
-  atom: true,
-
-  addAttributes() {
-    return {
-      src: { default: null },
-      alt: { default: null },
-      width: { default: null },
-    };
-  },
-
-  parseHTML() {
-    return [{ tag: 'img[src]' }];
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    const { width, ...rest } = HTMLAttributes;
-    return ['img', mergeAttributes(rest, width ? { style: `width:${width}px` } : {})];
-  },
-
-  addNodeView() {
-    return ReactNodeViewRenderer(ResizableImageView);
-  },
-
-  addCommands() {
-    return {
-      setImage: (options: Record<string, unknown>) => ({ commands }: any) =>
-        commands.insertContent({ type: 'image', attrs: options }),
-    } as any;
-  },
-});
 
 // ─── Toolbar button ───────────────────────────────────────────────────────────
 
@@ -134,20 +49,25 @@ export default function ArchiveFormPage({ initialDoc, archiveDocs, onAdd, onEdit
   const [imgBarOpen, setImgBarOpen] = useState(false);
 
   const editor = useEditor({
-    extensions: [StarterKit, Underline, ResizableImage],
+    extensions: [
+      StarterKit,
+      Underline,
+      Image.configure({ inline: true }),
+    ],
     content: initialDoc?.data.desc ?? '<p></p>',
     editorProps: {
       attributes: { class: 'min-h-[400px] px-4 py-3 focus:outline-none' },
     },
   });
 
-  const insertImage = useCallback(() => {
-    if (imgUrl.trim() && editor) {
-      editor.chain().focus().insertContent({ type: 'image', attrs: { src: imgUrl.trim() } }).run();
+  const insertImage = () => {
+    const url = imgUrl.trim();
+    if (url && editor) {
+      editor.chain().focus().setImage({ src: url }).run();
       setImgUrl('');
       setImgBarOpen(false);
     }
-  }, [imgUrl, editor]);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,7 +186,7 @@ export default function ArchiveFormPage({ initialDoc, archiveDocs, onAdd, onEdit
             {/* Editor area */}
             <EditorContent
               editor={editor}
-              className="[&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:px-4 [&_.ProseMirror]:py-3 [&_.ProseMirror]:focus:outline-none [&_.ProseMirror_h2]:text-2xl [&_.ProseMirror_h2]:font-bold [&_.ProseMirror_h2]:my-3 [&_.ProseMirror_h3]:text-xl [&_.ProseMirror_h3]:font-semibold [&_.ProseMirror_h3]:my-2 [&_.ProseMirror_p]:my-2 [&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:pl-6 [&_.ProseMirror_ul]:my-2"
+              className="[&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:px-4 [&_.ProseMirror]:py-3 [&_.ProseMirror]:focus:outline-none [&_.ProseMirror_h2]:text-2xl [&_.ProseMirror_h2]:font-bold [&_.ProseMirror_h2]:my-3 [&_.ProseMirror_h3]:text-xl [&_.ProseMirror_h3]:font-semibold [&_.ProseMirror_h3]:my-2 [&_.ProseMirror_p]:my-2 [&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:pl-6 [&_.ProseMirror_ul]:my-2 [&_.ProseMirror_img]:max-w-full [&_.ProseMirror_img]:rounded [&_.ProseMirror_img]:my-2"
             />
           </div>
         </div>

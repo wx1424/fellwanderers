@@ -85,8 +85,7 @@ export default function CommitteePage() {
           <div className="max-w-2xl">
             <h2 className="font-helvetica-black font-oblique text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet your committee!</h2>
             <p className="mt-6 sm:text-lg leading-8 text-gray-600">
-              We're here to assist and support you on your hiking adventures. Whether you're a seasoned hiker or new to the trail, our committee members are ready to help.
-              For any enquiries, ideas, or assistance, feel free to email us at <a href={"mailto:fellsoc@imperial.ac.uk"} className={"underline text-blue-600 hover:text-blue-800 visited:text-purple-600"} target={"_blank"}>fellsoc@imperial.ac.uk</a>, or message us through the WhatsApp chat. Let's embark on unforgettable hiking experiences together!
+              Ever wanted to know the faces behind the organising of all of those fantastic trips you've been on? Well, here they are. Scary though we may appear, we promise we're actually a really nice bunch! If you have any questions, problems, or need any support, we'll always be happy to help!
             </p>
           </div>
           <ul role="list" className="grid gap-x-12 gap-y-8 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2 ml-4">
@@ -96,8 +95,9 @@ export default function CommitteePage() {
                   <img className="absolute -left-6 w-24 h-24 border border-logoGreen-dark rounded-full shadow-lg"
                        src={person.image} alt={person.name}/>
                     <div className="flex flex-col py-5 pl-24">
-                      <strong className="text-slate-900 text-sm font-medium">{person.name + ' • ' + person.role}</strong>
-                      <span className="text-slate-500 text-sm font-mediuim">{person.course}</span>
+                      <strong className="font-helvetica-black font-oblique text-slate-900 text-sm font-medium">{person.name}</strong>
+                      <strong className="text-slate-500 text-sm">{person.role}</strong>
+                      <span className="text-slate-500 text-sm font-medium">{person.course}</span>
                     </div>
                 </div>
               </li>

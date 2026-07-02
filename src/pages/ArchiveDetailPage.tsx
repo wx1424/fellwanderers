@@ -48,6 +48,13 @@ export default function ArchiveDetailPage() {
         {!loading && !archive && <p className="text-gray-500">Report not found.</p>}
         {archive && (
           <>
+            {archive.thumbnail && (
+              <img
+                src={archive.thumbnail}
+                alt={archive.title}
+                className="w-full max-h-96 object-cover rounded-xl mb-6"
+              />
+            )}
             <div className="flex items-center gap-3 mb-4 flex-wrap">
               <h1 className="font-oblique text-3xl sm:text-4xl font-bold">{archive.title}</h1>
               {archive.route && (

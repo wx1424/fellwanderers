@@ -70,7 +70,7 @@ function StickyDescription() {
   const descs: Desc[] = [
     {
       title: "About Us",
-      para: "We are Fellwanderers, the hiking society for Imperial College London - your gateway to discovering the breathtaking landscapes and hidden gems of the United Kingdom. We will take you on unforgettable hiking experiences from day hikes, thrilling weekend trips, and captivating holiday tours across the UK. We are also looking for experienced hikers to help out with leading these trips, so get in touch if you are interested.",
+      para: "We are Fellwanderers, the hiking society for Imperial College London - your gateway to discovering the breathtaking landscapes and hidden gems of the United Kingdom. We offer a variety of activities, from day hikes and weekend trips, to tours across the UK and even abroad!",
       image: "hike_pics/isle-of-skye-2026.jpg",
       alt: "Isle of Skye 2026"
     },

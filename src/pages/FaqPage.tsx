@@ -164,7 +164,7 @@ export default function FaqPage() {
           Frequently asked questions
         </h2>
         <p className="w-full text-lg text-gray-600 px-4 lg:px-8 pt-4">
-          If you don't find the answers you need here, e-mail us at{" "}
+          If you have any questions that aren't answered here, e-mail us at{" "}
           <a href="mailto:fellsoc@imperial.ac.uk" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" target="_blank">
             fellsoc@imperial.ac.uk
           </a>
