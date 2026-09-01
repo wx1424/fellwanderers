@@ -72,7 +72,7 @@ const people = [
     name: 'Harry Kerfoot',
     role: 'Deputy President Logistics',
     image: 'committee/harryk.jpeg',
-    course: '2nd year Physics'
+    course: '3rd year Aero'
   },
   {
     name: 'Tate Trussell-Richards',
