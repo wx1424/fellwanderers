@@ -3,76 +3,112 @@ import PageFooter from "../components/PageFooter";
 
 const people = [
   {
-    name: 'Daniel Logue',
-    role: 'President',
-    image: 'committee/dan.jpg',
-    course: '3rd year Chemistry'
-  },
-  {
     name: 'Harry Su',
     role: 'Co-President',
-    image: 'committee/harry.jpg',
-    course: '3rd year Computing'
+    image: 'committee/harrys.jpeg',
+    course: '4th year Computing'
   },
   {
     name: 'Zaynub Jamil',
+    role: 'Co-President',
+    image: 'committee/zaynub.jpeg',
+    course: '4th year Medicine'
+  },
+  {
+    name: 'Hannah Ghafur',
     role: 'Treasurer',
-    image: 'committee/zaynub.jpg',
-    course: '3rd year Medicine'
+    image: 'committee/hannah.jpeg',
+    course: '4th year Physics'
   },
   {
     name: 'Ivy Wang',
     role: 'Secretary',
-    image: 'committee/ivy.jpg',
-    course: '2nd year Biochemistry'
-  },
-  {
-    name: 'Rashika Kiritharan',
-    role: 'Deputy President Communication',
-    image: 'committee/rashika.jpg',
-    course: '3rd year Medicine'
+    image: 'committee/archive-committee/ivy.jpg',
+    course: '3rd year Biochemistry'
   },
   {
     name: 'Dia Ajmera',
+    role: 'Deputy President Communication',
+    image: 'committee/archive-committee/dia.jpg',
+    course: '4th year Medicine'
+  },
+  {
+    name: 'Cathy Song',
     role: 'Deputy President Competitions',
-    image: 'committee/dia.jpg',
-    course: '3rd year Medicine'
+    image: 'committee/cathy.png',
+    course: '2nd year'
+  },
+  {
+    name: 'Elişka Hovorkova',
+    role: 'Deputy President Socials',
+    image: 'committee/eliska.jpeg',
+    course: '3rd year Physics'
   },
   {
     name: 'Will Xiao',
-    role: 'Deputy President Socials',
-    image: 'committee/will.jpg',
-    course: '2nd year Maths'
-  },
-  {
-    name: 'Mateusz Sejda',
     role: 'Deputy President Tours',
-    image: 'committee/mateusz.jpg',
-    course: '2nd year Physics'
+    image: 'committee/will.jpg',
+    course: 'who knows'
   },
   {
-    name: 'Sean Chong',
+    name: 'Kristin Li',
     role: 'Deputy President Weekend Trips',
-    image: 'committee/sean.jpg',
-    course: '3rd year Medicine'
+    image: '../person.png',
+    course: 'who knows'
   },
   {
     name: 'Rajveer Daga',
     role: 'Deputy President Activities',
-    image: 'committee/rajveer.jpg',
-    course: '2nd year Physics'
+    image: 'committee/archive-committee/rajveer.jpg',
+    course: '3rd year Physics'
   },
   {
-    name: 'Mihnea Lazar',
+    name: 'Ivy Xue',
     role: 'Deputy President Equipment',
-    image: 'committee/mihnea.jpg',
-    course: '3rd year Chemistry'
+    image: 'committee/ivyx.jpeg',
+    course: 'Management'
   },
   {
-    name: 'Elişka Hovorkova',
+    name: 'Harry Kerfoot',
     role: 'Deputy President Logistics',
-    image: 'committee/eliska.jpg',
+    image: 'committee/harryk.jpeg',
     course: '2nd year Physics'
+  },
+  {
+    name: 'Tate Trussell-Richards',
+    role: 'Deputy President Tea Break',
+    image: 'committee/tate.jpeg',
+    course: '2nd year Physics'
+  },
+  {
+    name: 'Mateusz Sejda',
+    role: 'Hike Leader',
+    image: 'committee/archive-committee/mateusz.jpg',
+    course: '3rd year Physics'
+  },
+  {
+    name: 'Sean Chong',
+    role: 'Hike Leader',
+    image: 'committee/sean.jpeg',
+    course: '4th year Medicine'
+  },
+  {
+    name: 'Cazza Chen',
+    role: 'Hike Leader',
+    image: 'committee/cazza.jpeg',
+    course: '4th year Physics'
+  },
+  {
+    name: 'Chaitanya Khemani',
+    role: 'Hike Leader',
+    image: 'committee/chaitanya.jpeg',
+    course: '3rd year EEE'
+  },
+  {
+    name: 'Ming Guo Foo',
+    role: 'Hike Leader',
+    image: 'committee/mingguo.jpeg',
+    course: 'dunno'
   }
 ]
 
